@@ -9,7 +9,7 @@ routerEmployee.post("/auth/login",login)
 routerEmployee.post("/auth/logout",logout)
 routerEmployee.post("/auth",isLogin)
 
-routerEmployee.get("/",getAllEmployee)
+// routerEmployee.get("/",getAllEmployee)
 
 
 export default routerEmployee
