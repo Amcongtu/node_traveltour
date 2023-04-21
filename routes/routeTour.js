@@ -8,7 +8,7 @@ const routerTour = express.Router()
 routerTour.post("/",verifyAdmin,createTour)
 routerTour.get("/",getAllTours)
 routerTour.get("/:id",getTour)
-routerTour.delete("/:id",verifyAdmin,deleteTour)
+routerTour.delete("/:id",deleteTour)
 
 
 export default routerTour

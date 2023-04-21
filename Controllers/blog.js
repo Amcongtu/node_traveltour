@@ -89,3 +89,50 @@ export const getBlog =async (req,res,next)=>{
     next(error)
   }
 }
+
+export const deleteBlog = async(req,res,next)=>{
+  connectCloud()
+  try {
+    const blogID = req.params.id;
+    const blog = await Blog.findById(blogID);
+
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+  
+    try {
+
+      if (blog.image_public_id) {
+        await cloudinary.uploader.destroy(blog.image_public_id, {
+          invalidate: true,
+        });
+
+      }
+    } catch (error) {
+      return res.status(500).json({message:"Delete image failed."})
+    }
+    try {
+      if(blog.public_id[0]){
+        for(let i=0;i<blog.public_id.length;i++){
+          if (blog.public_id[i]) {
+            await cloudinary.uploader.destroy(blog.public_id[i], {
+              invalidate: true,
+            });
+
+        }
+      }
+    }
+    } catch (error) {
+      return res.status(500).json({message:"Delete images in content failed."})
+      
+    }
+
+     await Blog.findByIdAndRemove(blogID);
+
+    return res
+      .status(200)
+      .json({ message: "Blog deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+}

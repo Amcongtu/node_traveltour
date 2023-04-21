@@ -26,20 +26,13 @@ async function processImages(content,folder_url) {
                 use_filename: true
             }); // Upload ảnh lên Cloudinary
             const newImgUrl = result.secure_url; // Lấy đường dẫn của ảnh từ Cloudinary
-            // console.log(content)
             newContent = content.replace(imgUrl, newImgUrl); // Thay đổi đường dẫn của ảnh trong nội dung
-            // console.log("===========")
-            // console.log(newContent)
 
             content = newContent; // Cập nhật nội dung mới
-            // console.log("---------------------")
-            // console.log(content)
             arrayCloud.push(result)
             public_id_cloud.push(result.public_id)
             imageUrls.push(newImgUrl); // Thêm đường dẫn của ảnh mới vào mảng
         }
-        // console.log("---------------------")
-        //     console.log(newContent)
         return { newContent, imageUrls ,arrayCloud,public_id_cloud}; // Trả về nội dung mới và mảng đường dẫn ảnh
     }
     }catch(err){
@@ -50,23 +43,24 @@ async function processImages(content,folder_url) {
 
 export const createTour = async (req, res, next) => {
   connectCloud();
-  // console.log(req.body)
   var savedTour={}
   try {
-
-    const tour = new Tour(req.body);
+    const {destination,...detail} = req.body
+    const tour = new Tour({
+      ...detail,
+      destination:destination.name
+    });
 
     // // Save the new document to the database
      savedTour = await tour.save();
-    console.log("1111")
-    await Destination.findOneAndUpdate(
-      { name: req.body.destination },
+    const data = await Destination.findOneAndUpdate(
+      { name: req.body.destination.name },
       { $push: { tours: savedTour._id } },
       { new: true }
     );
 
-    res.status(200).json(savedTour);
-    // return res.status(200).json("Bạn đã hoàn thành")
+  //  res.status(200).json(savedTour);
+    return res.status(200).json("Bạn đã hoàn thành")
   } catch (err) {
     if(req.body.image_public_id ){
       cloudinary.uploader.destroy(req.body.image_public_id, { invalidate: true });
@@ -79,7 +73,6 @@ export const createTour = async (req, res, next) => {
       }
     }
     // If adding fails, delete images on cloudinary
- 
       await Destination.findOneAndUpdate(
       { name: req.body.destination },
       { $pull: { tours: savedTour._id } }
@@ -93,7 +86,7 @@ export const createTour = async (req, res, next) => {
 
 export const getAllTours = async(req,res,next)=>{
   try{
-    const data = await Tour.find({})
+    const data = await Tour.find({}).sort({ createdAt: "desc" }) 
     return res.status(200).json(data)
   }catch(err){
     next()
@@ -114,18 +107,27 @@ export const getTour =async (req,res,next)=>{
 }
 
 export const deleteTour = async (req, res, next) => {
+  connectCloud()
   try {
     const tourID = req.params.id;
-    const tour = await Destination.findById(tourID);
+    const tour = await Tour.findById(tourID);
+
     if (!tour) {
       return res.status(404).json({ message: "Tour not found" });
     }
-    
+    const destination = await Destination.findOne({ tours: tourID });
+    if (destination) {
+      destination.tours.pull(tourID);
+      await destination.save();
+
+    }
     try {
-      if (tour.public_key_image) {
+
+      if (tour.image_public_id) {
         await cloudinary.uploader.destroy(tour.image_public_id, {
           invalidate: true,
         });
+
       }
     } catch (error) {
       return res.status(500).json({message:"Delete image failed."})
@@ -137,6 +139,7 @@ export const deleteTour = async (req, res, next) => {
             await cloudinary.uploader.destroy(tour.public_id[i], {
               invalidate: true,
             });
+
         }
       }
     }
@@ -145,10 +148,11 @@ export const deleteTour = async (req, res, next) => {
       
     }
 
-    await Tour.findByIdAndRemove(tourID);
+     await Tour.findByIdAndRemove(tourID);
+
     return res
       .status(200)
-      .json({ message: "Destination deleted successfully" });
+      .json({ message: "Tour deleted successfully" });
   } catch (err) {
     next(err);
   }

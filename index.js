@@ -8,6 +8,7 @@ import routerBlog from './routes/routeBlog.js';
 import routerDestionation from './routes/routeDestination.js';
 import routerEmployee from "./routes/routeEmployee.js";
 import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 
 dotenv.config()
 
@@ -34,8 +35,8 @@ mongoose.connection.on("connected",()=>{
 const app = express();
 app.use(cors())
 app.use(cookieParser())
-// app.use(bodyParser.json()); // for parsing application/json
-// app.use(bodyParser.urlencoded({ extended: true }));     
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true }));     
 
 // nhúng middleware vào express
 app.use(express.json())

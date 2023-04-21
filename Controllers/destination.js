@@ -1,6 +1,6 @@
 import cloudinary from "cloudinary";
 import Destination from "../models/Destination.js";
-import Tour from '../models/Tour.js';
+import Tour from "../models/Tour.js";
 function connectCloud() {
   cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -10,19 +10,20 @@ function connectCloud() {
 }
 
 export const createDestination = async (req, res, next) => {
-  connectCloud()
-  const {...destination } = req.body;
+  connectCloud();
+  const { ...destination } = req.body;
   var saveDestination = {};
   try {
     const newdDestination = new Destination({
       ...destination,
     });
     saveDestination = await newdDestination.save();
-    console.log(saveDestination)
     return res.status(200).json(saveDestination);
   } catch (err) {
     if (req.body?.public_key_image) {
-      await cloudinary.uploader.destroy(req.body.public_key_image, { invalidate: true });
+      await cloudinary.uploader.destroy(req.body.public_key_image, {
+        invalidate: true,
+      });
     }
 
     next(err);
@@ -84,6 +85,12 @@ export const deleteDestination = async (req, res, next) => {
     if (!destination) {
       return res.status(404).json({ message: "Destination not found" });
     }
+    for (let i = 0; i < destination.tours.length; i++) {
+      const tourId = destination.tours[i]._id;
+
+      await deleteTourById(tourId);
+    }
+
     try {
       if (destination.public_key_image) {
         await cloudinary.uploader.destroy(destination.public_key_image, {
@@ -91,12 +98,10 @@ export const deleteDestination = async (req, res, next) => {
         });
       }
     } catch (error) {
-      return res.status(500).json({message:"Delete image failed."})
+      return res.status(500).json({ message: "Delete image failed." });
     }
 
 
-    
-    
     await Destination.findByIdAndRemove(destinationId);
 
     return res
@@ -107,13 +112,12 @@ export const deleteDestination = async (req, res, next) => {
   }
 };
 
-
-export const getAllToursOfDestination= async (req, res, next) => {
+export const getAllToursOfDestination = async (req, res, next) => {
   try {
     const destinationId = req.params.id;
     const destination = await Destination.findById(destinationId);
     if (!destination) {
-      return res.status(404).json({ message: 'Destination not found' });
+      return res.status(404).json({ message: "Destination not found" });
     }
 
     const tours = await Tour.find({ _id: { $in: destination.tours } });
@@ -125,81 +129,114 @@ export const getAllToursOfDestination= async (req, res, next) => {
 };
 
 export const getDestinationById = async (req, res, next) => {
-    try {
-      const destinationId = req.params.id;
-      const destination = await Destination.findById(destinationId);
-      if (!destination) {
-        return res.status(404).json({ message: 'Destination not found' });
-      }
-  
-      // const tours = await Tour.find({ _id: { $in: destination.tours }, status: 'published' });
-  
-      return res.status(200).json(destination);
-    } catch (err) {
-      next(err);
+  try {
+    const destinationId = req.params.id;
+    const destination = await Destination.findById(destinationId);
+    if (!destination) {
+      return res.status(404).json({ message: "Destination not found" });
     }
-  };
 
-  export const getToursOfDestination = async (req, res, next) => {
-    try {
-      const destinationId = req.params.id;
-      const destination = await Destination.findById(destinationId);
-      if (!destination) {
-        return res.status(404).json({ message: 'Destination not found' });
-      }
-  
-      const tours = await Tour.find({ _id: { $in: destination.tours }});
-  
-      return res.status(200).json(tours);
-    } catch (err) {
-      next(err);
+    // const tours = await Tour.find({ _id: { $in: destination.tours }, status: 'published' });
+
+    return res.status(200).json(destination);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getToursOfDestination = async (req, res, next) => {
+  try {
+    const destinationId = req.params.id;
+    const destination = await Destination.findById(destinationId);
+    if (!destination) {
+      return res.status(404).json({ message: "Destination not found" });
     }
-  };
-  export const getDestinations = async (req, res, next) => {
-    try {
-      const page = parseInt(req.params.page) || 1; // số trang hiện tại, mặc định là trang 1 nếu không được cung cấp
-      const limit = parseInt(req.query.limit) || 10; // số lượng bản ghi trên mỗi trang, mặc định là 10 nếu không được cung cấp
-  
-      // Tính toán số lượng bản ghi và số lượng trang
-      const count = await Destination.countDocuments({ status: 'published' });
-      const totalPages = Math.ceil(count / limit);
-  
-      // Tìm danh sách các bản ghi
-      const skip = (page - 1) * limit;
-      const destinations = await Destination.find({ status: 'published' })
-        .select('_id name')
-        .skip(skip)
-        .limit(limit);
-  
-      return res.status(200).json({
-        destinations,
-        totalPages,
-        currentPage: page,
-        totalItems: count
+
+    const tours = await Tour.find({ _id: { $in: destination.tours } });
+
+    return res.status(200).json(tours);
+  } catch (err) {
+    next(err);
+  }
+};
+export const getDestinations = async (req, res, next) => {
+  try {
+    const page = parseInt(req.params.page) || 1; // số trang hiện tại, mặc định là trang 1 nếu không được cung cấp
+    const limit = parseInt(req.query.limit) || 10; // số lượng bản ghi trên mỗi trang, mặc định là 10 nếu không được cung cấp
+
+    // Tính toán số lượng bản ghi và số lượng trang
+    const count = await Destination.countDocuments({ status: "published" });
+    const totalPages = Math.ceil(count / limit);
+
+    // Tìm danh sách các bản ghi
+    const skip = (page - 1) * limit;
+    const destinations = await Destination.find({ status: "published" })
+      .select("_id name")
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      destinations,
+      totalPages,
+      currentPage: page,
+      totalItems: count,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getAllDestinations = async (req, res, next) => {
+  try {
+    // Tính toán số lượng bản ghi và số lượng trang
+
+    // Tìm danh sách các bản ghi
+
+    const destinations = await Destination.find().sort({ createdAt: "desc" });
+
+    return res.status(200).json(destinations);
+  } catch (err) {
+    next(err);
+  }
+};
+
+async function deleteTourById(tourId) {
+  connectCloud()
+  const tourid = String(tourId);
+
+  const tour = await Tour.findOne({ _id: tourid });
+
+  if (!tour) {
+    return;
+  }
+
+  try {
+    // Xóa ảnh đại diện tour trên Cloudinary nếu có
+    if (tour.image_public_id) {
+
+      await cloudinary.uploader.destroy(tour.image_public_id, {
+        invalidate: true,
       });
-    } catch (err) {
-      next(err);
     }
-  };
+  } catch (error) {
+    // Bỏ qua lỗi nếu không thể xóa ảnh đại diện
+  }
 
+  try {
+    // Xóa các ảnh trong nội dung tour trên Cloudinary nếu có
+    if (tour.public_id && tour.public_id.length > 0) {
 
-  export const getAllDestinations = async (req, res, next) => {
-    try {
-  
-  
-      // Tính toán số lượng bản ghi và số lượng trang
+      for (let i = 0; i < tour.public_id.length; i++) {
+        await cloudinary.uploader.destroy(tour.public_id[i], {
+          invalidate: true,
+        });
 
-
-  
-      // Tìm danh sách các bản ghi
-
-      const destinations = await Destination.find()
-
-  
-      return res.status(200).json(
-        destinations,
-      );
-    } catch (err) {
-      next(err);
+      }
     }
-  };
+  } catch (error) {
+        // Bỏ qua lỗi nếu không thể xóa các ảnh trong nội dung tour
+  }
+
+  // Xóa tour
+  await Tour.findByIdAndRemove(tourId);
+}

@@ -75,23 +75,24 @@ export const signUp = async (req, res) => {
 
 export const login = async (req,res,next)=>{
   try{
-      const user = await Employee.findOne({username:req.body.username});
-      if(!user) return next(createError(404,"User not found!"));
+      // console.log(req.body)
+
+      const user = await Employee.findOne({username:req.body.username, position: "admin"});
+      // const user = await Employee.findOne({_id:req.user.id, position: req.user.position});
+      if(!user) return res.status(404).json({message:"User not found!"});
       const isPasswordCorrect = await bcrypt.compare(req.body.password,user.password);
-      if(!isPasswordCorrect) return next(createError(400,"Wrong password or username!"));
+      if(!isPasswordCorrect) return res.status(400).json({message:"Wrong password or username!"});
       const token = jwt.sign(
           { id:user._id, position:user.position},
           process.env.JWT,
           { expiresIn: '1h' }
       );
       const {password,position,...otherDetails} = user._doc;  
-      
-      res
-      .cookie("access_token", token, {
+      res.cookie("access_token", token, {
           httpOnly:true,
       })
       .status(200)
-      .json({...otherDetails})
+      .json({...otherDetails,"access_token":token})
       // .redirect('/');
   }catch(err){
       next(err)

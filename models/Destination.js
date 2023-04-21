@@ -33,6 +33,6 @@ const destinationSchema = new mongoose.Schema({
       ref: 'Tour',
     },
   ],
-});
+},{timestamps:true});
 
 export default mongoose.model('Destination', destinationSchema);

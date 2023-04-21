@@ -1,27 +1,37 @@
 import jwt from "jsonwebtoken"
-import { createError } from "./error.js"
-// import Employee from "../models/Employee";
+
 
 export const verifyToken = (req,res,next)=>{
-    const token = req.cookies.access_token;
+    const token = req.body.access_token;
     const JWT_process = process.env.JWT
-    if(!token){
-        return next(createError(401,"You are not authenticated!"));
+    if(token){
+        jwt.verify(token,JWT_process,(err,user)=>{
+            // console.log(user)
+            // console.log("chay")
+    
+            if(err){
+                return res.status(403).json({message:"Token is not valid!"});
+            }
+            req.user = user;
+    
+            next()
+        })
     }
-    jwt.verify(token,JWT_process,(err,user)=>{
-        if(err){
-            return next(createError(403,"Token is not valid!"));
-        }
-        req.user = user;
-        next()
-    })
+    else{
+
+        return res.status(401).json({message:"You are not authenticated!"});
+
+    }
+
 }
 export const verifyAdmin = (req,res,next)=>{
     verifyToken(req,res ,()=>{
-        if(req.user.position==="admin" ){
+
+        if(req.user.position && req.user.position==="admin" ){
             next();
         }else{
-            return next(createError(403,"You are not authorized!"));
+            
+            return res.status(403).json({message:"You are not authorized!"});
         }
     })
 }
