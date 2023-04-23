@@ -31,51 +31,53 @@ export const createDestination = async (req, res, next) => {
 };
 
 export const updateDestination = async (req, res, next) => {
-  connectCloud();
-  const { image, ...destination } = req.body;
-  const avt = req.body.image;
-  let result = {};
-  var updatedDestination = {};
-  try {
-    const destinationId = req.params.id;
-    const existingDestination = await Destination.findById(destinationId);
-    if (!existingDestination) {
-      return res.status(404).json({ message: "Destination not found" });
-    }
-    const pathClodudinary = `destinations/${req.body.name}`;
-    if (avt) {
-      result = await cloudinary.uploader.upload(
-        avt,
-        function (res) {
-          return;
-        },
-        {
-          folder: pathClodudinary,
-          use_filename: true,
-        }
-      );
-      if (existingDestination.public_key_image) {
-        await cloudinary.uploader.destroy(
-          existingDestination.public_key_image,
-          { invalidate: true }
-        );
-      }
-      existingDestination.image = result.secure_url;
-      existingDestination.public_key_image = result.public_id;
-    }
+  // connectCloud();
+  // const { image, ...destination } = req.body;
+  // const avt = req.body.image;
+  // let result = {};
+  // var updatedDestination = {};
+  // try {
+  //   const destinationId = req.params.id;
+  //   const existingDestination = await Destination.findById(destinationId);
+  //   if (!existingDestination) {
+  //     return res.status(404).json({ message: "Destination not found" });
+  //   }
+  //   const pathClodudinary = `destinations/${req.body.name}`;
+  //   if (avt) {
+  //     result = await cloudinary.uploader.upload(
+  //       avt,
+  //       function (res) {
+  //         return;
+  //       },
+  //       {
+  //         folder: pathClodudinary,
+  //         use_filename: true,
+  //       }
+  //     );
+  //     if (existingDestination.public_key_image) {
+  //       await cloudinary.uploader.destroy(
+  //         existingDestination.public_key_image,
+  //         { invalidate: true }
+  //       );
+  //     }
+  //     existingDestination.image = result.secure_url;
+  //     existingDestination.public_key_image = result.public_id;
+  //   }
 
-    existingDestination.name = destination.name;
-    existingDestination.description = destination.description;
-    existingDestination.status = destination.status;
+  //   existingDestination.name = destination.name;
+  //   existingDestination.description = destination.description;
+  //   existingDestination.status = destination.status;
 
-    updatedDestination = await existingDestination.save();
-    return res.status(200).json(updatedDestination);
-  } catch (err) {
-    if (result && result?.public_id) {
-      await cloudinary.uploader.destroy(result.public_id, { invalidate: true });
-    }
-    next(err);
-  }
+  //   updatedDestination = await existingDestination.save();
+  //   return res.status(200).json(updatedDestination);
+  // } catch (err) {
+  //   if (result && result?.public_id) {
+  //     await cloudinary.uploader.destroy(result.public_id, { invalidate: true });
+  //   }
+  //   next(err);
+  // }
+  console.log(req.body)
+  console.log(req.params.id)
 };
 
 export const deleteDestination = async (req, res, next) => {

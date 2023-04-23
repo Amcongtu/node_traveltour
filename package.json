@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "api travel website",
   "main": "index.js",
+  "engines": {
+    "node": "16.x"
+  },
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js"
   },
   "author": "phamminhquan12c1@gmail.com",
   "license": "ISC",
