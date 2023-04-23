@@ -33,7 +33,11 @@ mongoose.connection.on("connected",()=>{
 
 
 const app = express();
-app.use(cors())
+app.use(
+    cors({
+      origin: "*",
+    })
+  );
 app.use(cookieParser())
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true }));     
