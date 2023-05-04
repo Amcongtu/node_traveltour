@@ -41,6 +41,28 @@ async function processImages(content,folder_url) {
 }
 
 
+export const getAllTours = async(req,res,next)=>{
+  try{
+    const data = await Tour.find({}).sort({ createdAt: "desc" }) 
+    return res.status(200).json(data)
+  }catch(err){
+    next()
+  }
+}
+
+export const getTour =async (req,res,next)=>{
+  try {
+    const tourID = req.params.id;
+    const tour = await Tour.findById(tourID);
+    if (!tour) {
+      return res.status(404).json({ message: 'Destination not found' });
+    }
+    return res.status(200).json(tour)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const createTour = async (req, res, next) => {
   connectCloud();
   var savedTour={}
@@ -81,30 +103,6 @@ export const createTour = async (req, res, next) => {
   }
   
 };
-
-
-
-export const getAllTours = async(req,res,next)=>{
-  try{
-    const data = await Tour.find({}).sort({ createdAt: "desc" }) 
-    return res.status(200).json(data)
-  }catch(err){
-    next()
-  }
-}
-
-export const getTour =async (req,res,next)=>{
-  try {
-    const tourID = req.params.id;
-    const tour = await Tour.findById(tourID);
-    if (!tour) {
-      return res.status(404).json({ message: 'Destination not found' });
-    }
-    return res.status(200).json(tour)
-  } catch (error) {
-    next(error)
-  }
-}
 
 export const deleteTour = async (req, res, next) => {
   connectCloud()
@@ -153,6 +151,41 @@ export const deleteTour = async (req, res, next) => {
     return res
       .status(200)
       .json({ message: "Tour deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateTour = async (req, res, next) => {
+  connectCloud();
+  try {
+    const tourID = req.params.id;
+    const {...updatedTour} = req.body;
+    const existingTour = await Tour.findById(tourID);
+    if (!existingTour) {
+      return res.status(404).json({ message: "Tour not found" });
+    }
+    if(req.body.image_public_id){
+      await cloudinary.uploader.destroy(tour.image_public_id, {
+        invalidate: true,
+      });
+    }
+    if(req.body.content!==""){
+      // xử lý code ở đây
+    }
+    // Update tour document in database
+    const tour = await Tour.findByIdAndUpdate(tourID, { ...updatedTour }, { new: true });
+    if (!tour) {
+      return res.status(404).json({ message: "Tour not found" });
+    }
+
+    // Update tour reference in destination document
+    if (destination.tours.indexOf(tourID) === -1) {
+      destination.tours.push(tourID);
+      await destination.save();
+    }
+
+    return res.status(200).json({ message: "Tour updated successfully", tour });
   } catch (err) {
     next(err);
   }

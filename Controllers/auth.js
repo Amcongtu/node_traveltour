@@ -1,8 +1,10 @@
 
 import jwt from 'jsonwebtoken';
-import { createError } from './../utils/error.js';
+// import { createError } from './../utils/error.js';
 import bcrypt from "bcryptjs"
 import Employee from '../models/Employee.js';
+
+import Customer from '..//models/Customer.js'
 
 
 //đăng nhập sử dụng passportjs
@@ -113,7 +115,7 @@ export const register = async (req,res,next)=>{
           position:req.body.position,
       })
       await newUser.save();
-      res.status(200).send("User has been created",)
+      return res.status(200).send("User has been created",)
   }catch(err){
       next(err)
   }
@@ -130,3 +132,32 @@ export const getAllEmployee = async(req,res,next)=>{
     next(err)
   }
 }
+
+export const login_client = async (req,res,next)=>{
+  try{
+      // console.log(req.body)
+
+      const user = await Customer.findOne({username:req.body.username});
+      // const user = await Employee.findOne({_id:req.user.id, position: req.user.position});
+      if(!user) return res.status(404).json({message:"User not found!"});
+      const isPasswordCorrect = await bcrypt.compare(req.body.password,user.password);
+      if(!isPasswordCorrect) return res.status(400).json({message:"Wrong password or username!"});
+      const token = jwt.sign(
+          { id:user._id},
+          process.env.JWT,
+          { expiresIn: '1h' }
+      );
+      const {password,...otherDetails} = user._doc;  
+      res.cookie("access_token_client", token, {
+          httpOnly:true,
+      })
+      .status(200)
+      .json({...otherDetails,"access_token_client":token})
+      // .redirect('/');
+  }catch(err){
+      next(err)
+  }
+}
+
+
+

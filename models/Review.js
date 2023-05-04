@@ -15,10 +15,6 @@ const reviewSchema = new Schema({
     type: Number,
     required: true,
   },
-  created_at: {
-    type: Date,
-    default: Date.now,
-  },
   tour: {
     type: Schema.Types.ObjectId,
     ref: 'Tour',
@@ -29,7 +25,7 @@ const reviewSchema = new Schema({
     ref: 'Customer',
     required: true,
   },
-});
+}, {timestamps:true});
 
 const Review = mongoose.model('Review', reviewSchema);
 

@@ -63,7 +63,7 @@ app.use((err, req, res, next)=>{
 
 
 app.listen(8800,()=>{
-    res.json("thanh cong")
+    // res.json("thanh cong")
     console.log("Connect to backend!")
     connect()
 })

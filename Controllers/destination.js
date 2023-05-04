@@ -30,56 +30,6 @@ export const createDestination = async (req, res, next) => {
   }
 };
 
-export const updateDestination = async (req, res, next) => {
-  // connectCloud();
-  // const { image, ...destination } = req.body;
-  // const avt = req.body.image;
-  // let result = {};
-  // var updatedDestination = {};
-  // try {
-  //   const destinationId = req.params.id;
-  //   const existingDestination = await Destination.findById(destinationId);
-  //   if (!existingDestination) {
-  //     return res.status(404).json({ message: "Destination not found" });
-  //   }
-  //   const pathClodudinary = `destinations/${req.body.name}`;
-  //   if (avt) {
-  //     result = await cloudinary.uploader.upload(
-  //       avt,
-  //       function (res) {
-  //         return;
-  //       },
-  //       {
-  //         folder: pathClodudinary,
-  //         use_filename: true,
-  //       }
-  //     );
-  //     if (existingDestination.public_key_image) {
-  //       await cloudinary.uploader.destroy(
-  //         existingDestination.public_key_image,
-  //         { invalidate: true }
-  //       );
-  //     }
-  //     existingDestination.image = result.secure_url;
-  //     existingDestination.public_key_image = result.public_id;
-  //   }
-
-  //   existingDestination.name = destination.name;
-  //   existingDestination.description = destination.description;
-  //   existingDestination.status = destination.status;
-
-  //   updatedDestination = await existingDestination.save();
-  //   return res.status(200).json(updatedDestination);
-  // } catch (err) {
-  //   if (result && result?.public_id) {
-  //     await cloudinary.uploader.destroy(result.public_id, { invalidate: true });
-  //   }
-  //   next(err);
-  // }
-  console.log(req.body)
-  console.log(req.params.id)
-};
-
 export const deleteDestination = async (req, res, next) => {
   try {
     const destinationId = req.params.id;
@@ -109,6 +59,88 @@ export const deleteDestination = async (req, res, next) => {
     return res
       .status(200)
       .json({ message: "Destination deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// export const updateDestination = async (req, res, next) => {
+//   connectCloud();
+//   const {...destination } = req.body;
+//   const avt = req.body.image;
+//   let result = {};
+//   var updatedDestination = {};
+//   try {
+//     const destinationId = req.params.id;
+//     const existingDestination = await Destination.findById(destinationId);
+//     if (!existingDestination) {
+//       return res.status(404).json({ message: "Destination not found" });
+//     }
+//     const pathClodudinary = `destinations/${req.body.name}`;
+//     if (avt) {
+//       result = await cloudinary.uploader.upload(
+//         avt,
+//         function (res) {
+//           return;
+//         },
+//         {
+//           folder: pathClodudinary,
+//           use_filename: true,
+//         }
+//       );
+//       if (existingDestination.public_key_image) {
+//         await cloudinary.uploader.destroy(
+//           existingDestination.public_key_image,
+//           { invalidate: true }
+//         );
+//       }
+//       existingDestination.image = result.secure_url;
+//       existingDestination.public_key_image = result.public_id;
+//     }
+
+//     existingDestination.name = destination.name;
+//     existingDestination.description = destination.description;
+//     existingDestination.status = destination.status;
+
+//     updatedDestination = await existingDestination.save();
+//     return res.status(200).json(updatedDestination);
+//   } catch (err) {
+//     if (result && result?.public_id) {
+//       await cloudinary.uploader.destroy(result.public_id, { invalidate: true });
+//     }
+//     next(err);
+//   }
+//   console.log(req.body)
+//   console.log(req.params.id)
+// };
+
+
+
+export const updateDestination = async (req, res, next) => {
+  connectCloud();
+  try {
+    const destinationId = req.params.id;
+    const updatedDestination = req.body;
+    const existingDestination = await Destination.findById(destinationId);
+    if (!existingDestination) {
+      return res.status(404).json({ message: "Destination not found" });
+    }
+    if (req.body.public_key_image) {
+      await cloudinary.uploader.destroy(
+        existingDestination.public_key_image,
+        { invalidate: true }
+      );
+    }
+    const destination = await Destination.findByIdAndUpdate(destinationId, updatedDestination, { new: true });
+    if (!destination) {
+      return res.status(404).json({ message: "Destination not found" });
+    }
+
+    // Update destination name in tours
+    if (existingDestination.name !== destination.name) {
+      await Tour.updateMany({ destination: existingDestination.name }, { destination: destination.name });
+    }
+    return res.status(200).json({ message: "Destination updated successfully", destination });
   } catch (err) {
     next(err);
   }
@@ -202,6 +234,16 @@ export const getAllDestinations = async (req, res, next) => {
   }
 };
 
+export const getPublicDestinationAndTour = async (req, res, next) => {
+  try {
+    const destinations = await Destination.find().sort({ createdAt: "desc" }).populate('tours');
+
+    return res.status(200).json(destinations);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function deleteTourById(tourId) {
   connectCloud()
   const tourid = String(tourId);
@@ -236,7 +278,7 @@ async function deleteTourById(tourId) {
       }
     }
   } catch (error) {
-        // Bỏ qua lỗi nếu không thể xóa các ảnh trong nội dung tour
+    // Bỏ qua lỗi nếu không thể xóa các ảnh trong nội dung tour
   }
 
   // Xóa tour

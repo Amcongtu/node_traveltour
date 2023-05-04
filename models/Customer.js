@@ -29,7 +29,7 @@ const customerSchema = new mongoose.Schema({
     },
     dateOfBirth: {
       type: Date,
-      default: new Date('1980-01-01'),
+      default: new Date('1970-01-01'),
     },
     gender: {
       type: String,
