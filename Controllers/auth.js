@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from "bcryptjs"
 import Employee from '../models/Employee.js';
 
-import Customer from '..//models/Customer.js'
+import Customer from '../models/Customer.js'
 
 
 //đăng nhập sử dụng passportjs
@@ -134,26 +134,54 @@ export const getAllEmployee = async(req,res,next)=>{
 }
 
 export const login_client = async (req,res,next)=>{
+  console.log(req.body)
   try{
       // console.log(req.body)
 
-      const user = await Customer.findOne({username:req.body.username});
+      const user = await Customer.findOne({email:req.body.email});
       // const user = await Employee.findOne({_id:req.user.id, position: req.user.position});
+      // console.log(user)
       if(!user) return res.status(404).json({message:"User not found!"});
       const isPasswordCorrect = await bcrypt.compare(req.body.password,user.password);
-      if(!isPasswordCorrect) return res.status(400).json({message:"Wrong password or username!"});
+      if(!isPasswordCorrect) return res.status(400).json({success: false,message:"Wrong password or username!"});
       const token = jwt.sign(
           { id:user._id},
           process.env.JWT,
           { expiresIn: '1h' }
       );
       const {password,...otherDetails} = user._doc;  
-      res.cookie("access_token_client", token, {
+        console.log("tui ne")
+      return res.cookie("access_token_client", token, {
           httpOnly:true,
       })
       .status(200)
-      .json({...otherDetails,"access_token_client":token})
+      .json({...otherDetails,"access_token_client":token,success: true,message: 'Login success!'})
       // .redirect('/');
+  }catch(err){
+      next(err)
+  }
+}
+
+
+export const register_client = async (req,res,next)=>{
+  try{
+      const existUser = await Customer.findOne({email:req.body.email})
+      if(existUser){
+        return res.status(400).send({register: false, message: '"Email already exists"'})
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(req.body.password,salt);
+
+      const newUser = new Customer({
+          name: req.body.name,
+          email: req.body.email,  
+          password: hash,
+          phone:req.body.phone,
+      })
+
+      await newUser.save();
+      return res.status(200).send({register: true, message: "User has been created"})
   }catch(err){
       next(err)
   }

@@ -226,7 +226,7 @@ export const getAllDestinations = async (req, res, next) => {
 
     // Tìm danh sách các bản ghi
 
-    const destinations = await Destination.find().sort({ createdAt: "desc" });
+    const destinations = await Destination.find().sort({ createdAt: "desc" }).populate('tours');
 
     return res.status(200).json(destinations);
   } catch (err) {

@@ -136,3 +136,34 @@ export const deleteBlog = async(req,res,next)=>{
     next(err);
   }
 }
+
+
+
+export const updateBlog = async (req, res, next) => {
+  connectCloud();
+  try {
+    const blogID = req.params.id;
+    const {...updatedBlog} = req.body;
+    const existingBlog = await Blog.findById(blogID);
+    if (!existingBlog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+    if(req.body.image_public_id){
+      await cloudinary.uploader.destroy(existingBlog.image_public_id, {
+        invalidate: true,
+      });
+    
+    }
+    console.log('1111')
+    // Update blog document in database
+    const blog = await Blog.findByIdAndUpdate(blogID, { ...updatedBlog }, { new: true });
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+
+    return res.status(200).json({ message: "Blog updated successfully", blog });
+  } catch (err) {
+    next(err);
+  }
+};
