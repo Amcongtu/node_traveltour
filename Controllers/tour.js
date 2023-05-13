@@ -67,9 +67,13 @@ export const createTour = async (req, res, next) => {
   connectCloud();
   var savedTour={}
   try {
-    const {destination,...detail} = req.body
+    const {destination,rating,...detail} = req.body
+    if(rating>=5){
+      rating=5
+    }
     const tour = new Tour({
       ...detail,
+      rating,
       destination:destination.name
     });
 
