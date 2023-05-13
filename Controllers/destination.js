@@ -165,7 +165,7 @@ export const getAllToursOfDestination = async (req, res, next) => {
 export const getDestinationById = async (req, res, next) => {
   try {
     const destinationId = req.params.id;
-    const destination = await Destination.findById(destinationId);
+    const destination = await Destination.findById(destinationId).populate('tours');
     if (!destination) {
       return res.status(404).json({ message: "Destination not found" });
     }
