@@ -69,11 +69,12 @@ export const createTour = async (req, res, next) => {
   try {
     const {destination,rating,...detail} = req.body
     if(rating>=5){
-      rating=5
+      var ratingEdited =5 
+
     }
     const tour = new Tour({
       ...detail,
-      rating,
+      rating:ratingEdited,
       destination:destination.name
     });
 
