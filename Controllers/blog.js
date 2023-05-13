@@ -75,7 +75,14 @@ export const getAllBlog  = async (req,res,next)=>{
    next(error)
   }
 }
-
+export const getAllBlogStatusPublish  = async (req,res,next)=>{
+  try {
+    const blogs = await Blog.find({status:"published"})
+    return res.status(200).json(blogs)
+  } catch (error) {
+   next(error)
+  }
+}
 export const getBlog =async (req,res,next)=>{
   try {
     
@@ -154,7 +161,7 @@ export const updateBlog = async (req, res, next) => {
       });
     
     }
-    console.log('1111')
+    console.log(req.body)
     // Update blog document in database
     const blog = await Blog.findByIdAndUpdate(blogID, { ...updatedBlog }, { new: true });
     if (!blog) {

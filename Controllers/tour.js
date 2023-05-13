@@ -49,6 +49,14 @@ export const getAllTours = async(req,res,next)=>{
     next()
   }
 }
+export const getAllToursStatusPublish = async(req,res,next)=>{
+  try{
+    const data = await Tour.find({status:"published"}).sort({ createdAt: "desc" }) 
+    return res.status(200).json(data)
+  }catch(err){
+    next()
+  }
+}
 
 export const getTour =async (req,res,next)=>{
   try {
@@ -188,10 +196,28 @@ export const updateTour = async (req, res, next) => {
     //   Destination.tours.push(tourID);
     //   await Destination.save();
     // }
-    console.log(123123)
 
     return res.status(200).json({ message: "Tour updated successfully", tour });
   } catch (err) {
     next(err);
   }
 };
+
+
+export const findTour_Name = async (req, res) => {
+  const { keyword } = req.body;
+
+  try {
+    const tours = await Tour.find({
+      $or: [
+        { title: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } },
+        { content: { $regex: keyword, $options: 'i' } }
+      ]
+    });
+    return res.status(200).json({ message: "Success",tours});
+  } catch (error) {
+  
+    return next
+  }
+}
