@@ -236,11 +236,23 @@ export const getAllDestinations = async (req, res, next) => {
     next(err);
   }
 };
+// export const getAllDestinationsStatusPublic = async (req, res, next) => {
+//   try {
+
+
+//     const destinations = await Destination.find({status:"published"}).sort({ createdAt: "desc" }).populate('tours');
+
+//     return res.status(200).json(destinations);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
 export const getAllDestinationsStatusPublic = async (req, res, next) => {
   try {
-
-
-    const destinations = await Destination.find({status:"published"}).sort({ createdAt: "desc" }).populate('tours');
+    const destinations = await Destination.find({ status: "published", tours: { $ne: [] } })
+      .sort({ createdAt: "desc" })
+      .populate("tours");
 
     return res.status(200).json(destinations);
   } catch (err) {

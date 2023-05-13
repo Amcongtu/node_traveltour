@@ -76,17 +76,6 @@ const tourSchema = new Schema({
     // set: (value) => sanitizeHtml(value),
   },
 },{timestamps:true});
-// tính toán để lưu lại rate mới
-tourSchema.methods.calculateAverageRating = async function () {
-  const reviews = await mongoose.model('Review').find({ tour: this._id });
-  if (reviews.length === 0) {
-    return;
-  }
-  const totalRating = reviews.reduce((total, review) => {
-    return total + review.rating;
-  }, 0);
-  this.rating = totalRating / reviews.length;
-};
 
 
 

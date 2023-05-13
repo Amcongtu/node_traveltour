@@ -204,7 +204,7 @@ export const updateTour = async (req, res, next) => {
 };
 
 
-export const findTour_Name = async (req, res) => {
+export const findTour_Name = async (req, res,next) => {
   const { keyword } = req.body;
 
   try {
@@ -218,6 +218,6 @@ export const findTour_Name = async (req, res) => {
     return res.status(200).json({ message: "Success",tours});
   } catch (error) {
   
-    return next
+     next()
   }
 }
