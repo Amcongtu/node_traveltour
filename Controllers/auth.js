@@ -101,25 +101,7 @@ export const login = async (req,res,next)=>{
   }
 }
 
-export const register = async (req,res,next)=>{
-  // console.log(req.body.username)
-  try{
-      const salt = bcrypt.genSaltSync(10);
-      const hash = bcrypt.hashSync(req.body.password,salt);
-      
-      const newUser = new Employee({
-          name: req.body.name,
-          username: req.body.username,
-          email: req.body.email,  
-          password: hash,
-          position:req.body.position,
-      })
-      await newUser.save();
-      return res.status(200).send("User has been created",)
-  }catch(err){
-      next(err)
-  }
-}
+
 
 export const getAllEmployee = async(req,res,next)=>{
   try {
@@ -132,13 +114,29 @@ export const getAllEmployee = async(req,res,next)=>{
     next(err)
   }
 }
-
-export const login_client = async (req,res,next)=>{
-  console.log(req.body)
+export const register = async (req,res,next)=>{
+  // console.log(req.body.username)
   try{
-      // console.log(req.body)
-
-      const user = await Customer.findOne({email:req.body.email});
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(req.body.password,salt);
+      
+      const newUser = new Employee({
+          name: req.body.name,
+          username: req.body.username,
+          email: req.body.email.toLowerCase(),  
+          password: hash,
+          position:req.body.position,
+      })
+      await newUser.save();
+      return res.status(200).send("User has been created",)
+  }catch(err){
+      next(err)
+  }
+}
+export const login_client = async (req,res,next)=>{
+  try{
+    const email = req.body.email.toLowerCase();
+      const user = await Customer.findOne({email:email});
       // const user = await Employee.findOne({_id:req.user.id, position: req.user.position});
       // console.log(user)
       if(!user) return res.status(404).json({message:"User not found!"});
