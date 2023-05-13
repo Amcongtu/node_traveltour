@@ -233,6 +233,19 @@ export const getAllDestinations = async (req, res, next) => {
     next(err);
   }
 };
+export const getAllDestinationsStatusPublic = async (req, res, next) => {
+  try {
+    // Tính toán số lượng bản ghi và số lượng trang
+
+    // Tìm danh sách các bản ghi
+
+    const destinations = await Destination.find({status:"published"}).sort({ createdAt: "desc" }).populate('tours');
+
+    return res.status(200).json(destinations);
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const getPublicDestinationAndTour = async (req, res, next) => {
   try {

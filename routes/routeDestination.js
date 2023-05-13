@@ -1,5 +1,5 @@
 import express from 'express';
-import { createDestination, deleteDestination, getAllDestinations, getAllToursOfDestination, getDestinations , getToursOfDestination, updateDestination,getDestinationById } from '../Controllers/destination.js';
+import { createDestination, deleteDestination, getAllDestinations, getAllToursOfDestination, getDestinations , getToursOfDestination, updateDestination,getDestinationById, getAllDestinationsStatusPublic } from '../Controllers/destination.js';
 import { verifyAdmin } from '../utils/verifyToken.js';
 
 const routerDestination = express.Router();
@@ -7,6 +7,7 @@ const routerDestination = express.Router();
 // lấy danh sách destination
 // http://localhost:8800/api/destination/alltours/2
 routerDestination.get("/",getAllDestinations)
+routerDestination.get("/publish",getAllDestinationsStatusPublic)
 
 // lay danh sach destination status published trang :id
 routerDestination.get('/tourspublished/:page', getDestinations );
