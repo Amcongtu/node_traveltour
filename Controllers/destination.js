@@ -222,9 +222,7 @@ export const getDestinations = async (req, res, next) => {
 
 export const getAllDestinations = async (req, res, next) => {
   try {
-    // Tính toán số lượng bản ghi và số lượng trang
-
-    // Tìm danh sách các bản ghi
+ 
 
     const destinations = await Destination.find().sort({ createdAt: "desc" }).populate('tours');
 
@@ -235,9 +233,7 @@ export const getAllDestinations = async (req, res, next) => {
 };
 export const getAllDestinationsStatusPublic = async (req, res, next) => {
   try {
-    // Tính toán số lượng bản ghi và số lượng trang
 
-    // Tìm danh sách các bản ghi
 
     const destinations = await Destination.find({status:"published"}).sort({ createdAt: "desc" }).populate('tours');
 

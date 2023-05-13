@@ -161,7 +161,6 @@ export const updateBlog = async (req, res, next) => {
       });
     
     }
-    console.log(req.body)
     // Update blog document in database
     const blog = await Blog.findByIdAndUpdate(blogID, { ...updatedBlog }, { new: true });
     if (!blog) {
