@@ -75,14 +75,22 @@ export const createTour = async (req, res, next) => {
   connectCloud();
   var savedTour={}
   try {
-    const {destination,rating,...detail} = req.body
-    if(rating>=5){
-      var ratingEdited =5 
+    const {destination,rating,price,...detail} = req.body
+    var ratingEdited=rating
+    var priceEdited =price
+
+    if(rating>=5||rating<=0){
+      ratingEdited  =5 
 
     }
+    if(price<=0){
+      priceEdited=0
+    }
+
     const tour = new Tour({
       ...detail,
       rating:ratingEdited,
+      price:priceEdited,
       destination:destination.name
     });
 
@@ -174,7 +182,26 @@ export const updateTour = async (req, res, next) => {
   try {
     // console.log(req.body)
     const tourID = req.params.id;
-    const {...updatedTour} = req.body;
+    // const {...updatedTour} = req.body;
+    const {destination,rating,price,...updatedTour} = req.body
+    var ratingEdited=rating
+    var priceEdited =price
+
+    if(rating>=5||rating<=0){
+      ratingEdited  =5 
+
+    }
+    if(price<=0){
+      priceEdited=0
+    }
+
+    // const tour = new Tour({
+    //   ...detail,
+    //   rating:ratingEdited,
+    //   price:priceEdited,
+    //   destination:destination.name
+    // });
+
     const existingTour = await Tour.findById(tourID);
     if (!existingTour) {
       return res.status(404).json({ message: "Tour not found" });
@@ -186,7 +213,8 @@ export const updateTour = async (req, res, next) => {
       });
     }
     // Update tour document in database
-    const tour = await Tour.findByIdAndUpdate(tourID, { ...updatedTour }, { new: true });
+    const tour = await Tour.findByIdAndUpdate(tourID, {  rating:ratingEdited,
+      price:priceEdited, ...updatedTour }, { new: true });
     if (!tour) {
       return res.status(404).json({ message: "Tour not found" });
     }
