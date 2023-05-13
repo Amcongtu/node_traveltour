@@ -135,7 +135,12 @@ export const updateDestination = async (req, res, next) => {
     if (!destination) {
       return res.status(404).json({ message: "Destination not found" });
     }
-
+    if(destination.status == "draft"){
+      await Tour.updateMany(
+        { destination: existingDestination.name },
+        { status: 'draft' }
+      );
+    }
     // Update destination name in tours
     if (existingDestination.name !== destination.name) {
       await Tour.updateMany({ destination: existingDestination.name }, { destination: destination.name });
