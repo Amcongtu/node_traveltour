@@ -252,7 +252,10 @@ export const getAllDestinationsStatusPublic = async (req, res, next) => {
   try {
     const destinations = await Destination.find({ status: "published", tours: { $ne: [] } })
       .sort({ createdAt: "desc" })
-      .populate("tours");
+      .populate({
+        path: "tours",
+        match: { status: "published" }
+        });
 
     return res.status(200).json(destinations);
   } catch (err) {
