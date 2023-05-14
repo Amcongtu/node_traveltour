@@ -250,7 +250,7 @@ export const getAllDestinations = async (req, res, next) => {
 
 export const getAllDestinationsStatusPublic = async (req, res, next) => {
   try {
-    const destinations = await Destination.find({ status: "published", tours: { $ne: [] } })
+    const destinations = await Destination.find({ status: "published" })
       .sort({ createdAt: "desc" })
       .populate({
         path: "tours",
