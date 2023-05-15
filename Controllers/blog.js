@@ -155,12 +155,7 @@ export const updateBlog = async (req, res, next) => {
     if (!existingBlog) {
       return res.status(404).json({ message: "Blog not found" });
     }
-    if(req.body.image_public_id){
-      await cloudinary.uploader.destroy(existingBlog.image_public_id, {
-        invalidate: true,
-      });
-    
-    }
+   
     // Update blog document in database
     const blog = await Blog.findByIdAndUpdate(blogID, { ...updatedBlog }, { new: true });
     if (!blog) {
