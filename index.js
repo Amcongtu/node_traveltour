@@ -11,7 +11,7 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import authRouter from './routes/routerAuth.js'
 import contactRouter from './routes/routerContact.js'
-
+import reviewRouter from './routes/routerReview.js'
 
 dotenv.config()
 
@@ -51,6 +51,7 @@ app.use("/api/blog",routerBlog),
 app.use("/api/destination",routerDestionation),
 app.use("/api/employee",routerEmployee),
 app.use('/api/auth',authRouter)
+app.use('/api/review',reviewRouter)
 app.use('/api/contact',contactRouter)
 
 app.use((err, req, res, next)=>{

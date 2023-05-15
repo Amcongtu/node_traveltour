@@ -3,14 +3,14 @@ import Tour from "../models/Tour.js";
 
 export const insertReview = async (req, res, next) => {
     try {
-        const { username, comment, rating, tourId, customerId } = req.body;
+        const {  comment, rating, tourId, customerId } = req.body;
         var ratingEdit = rating
         if(!rating){
           ratingEdit=0
         }
         // Tạo một document mới cho review
         const newReview = new Review({
-            username,
+
             comment,
             rating:ratingEdit,
             tour: tourId,
@@ -77,7 +77,7 @@ export const deleteReview = async (req, res, next) => {
   export const updateReview = async (req, res, next) => {
     try {
       const reviewId = req.params.id;
-      const { username, comment, rating } = req.body;
+      const {  comment, rating } = req.body;
   
       // Tìm review trong database
       const review = await Review.findById(reviewId);
@@ -86,7 +86,7 @@ export const deleteReview = async (req, res, next) => {
       }
   
       // Cập nhật thông tin review
-      review.username = username;
+
       review.comment = comment;
       review.rating = rating;
   

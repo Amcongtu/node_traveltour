@@ -3,10 +3,7 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const reviewSchema = new Schema({
-  username: {
-    type: String,
-    required: true,
-  },
+  
   comment: {
     type: String,
     required: true,
