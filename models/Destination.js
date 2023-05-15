@@ -9,11 +9,6 @@ const destinationSchema = new mongoose.Schema({
     type: String,
     default:"Destination is not description."
   },
-  openingDate: {
-    type: Date,
-    // required: true,
-    default:Date.now()
-  },
   image: {
     type: String,
     default:"https://tse2.mm.bing.net/th?id=OIP.49JzF-LUDDBCKfQX_aqkdwHaHa&pid=Api&P=0"

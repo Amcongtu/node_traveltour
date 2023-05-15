@@ -125,3 +125,17 @@ export const deleteReview = async (req, res, next) => {
       next(err);
     }
   };
+
+export const getAllReviewsOfTour = async(req,res,next)=>{
+  try {
+    const  tourID  = req.params.id;
+
+    // Truy vấn danh sách review dựa vào tourID
+    const reviews = await Review.find({ tour: tourID }).populate("customer");
+
+    return res.status(200).json({message:"Successfully",data:reviews});
+  } catch (error) {
+   
+    next(error)
+  }
+}
