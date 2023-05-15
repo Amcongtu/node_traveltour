@@ -6,7 +6,7 @@ export const insertReview = async (req, res, next) => {
         const {  comment, rating, tourId, customerId } = req.body;
         var ratingEdit = rating
         if(!rating){
-          ratingEdit=0
+          ratingEdit=1
         }
         // Tạo một document mới cho review
         const newReview = new Review({
