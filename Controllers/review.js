@@ -25,13 +25,14 @@ export const insertReview = async (req, res, next) => {
         if (!tour) {
             return res.status(404).json({ message: "Tour not found" });
         }
-
         // Tính toán lại rating của tour
         const reviews = await Review.find({ tour: tourId });
         const totalRating = reviews.reduce((total, review) => {
             return total + review.rating;
         }, 0);
         const averageRating = totalRating / reviews.length;
+
+        tour.reviews.push(savedReview);
 
         tour.rating = averageRating;
         await tour.save();
