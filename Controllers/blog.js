@@ -69,8 +69,8 @@ export const createBlog = async (req, res, next) => {
 
 export const getAllBlog  = async (req,res,next)=>{
   try {
-    const blogs = await Blog.find()
-    res.status(200).json(blogs)
+    const blogs = await Blog.find().sort({ createdAt: "desc" })
+    return res.status(200).json(blogs)
   } catch (error) {
    next(error)
   }

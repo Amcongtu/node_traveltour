@@ -4,12 +4,15 @@ import Tour from "../models/Tour.js";
 export const insertReview = async (req, res, next) => {
     try {
         const { username, comment, rating, tourId, customerId } = req.body;
-
+        var ratingEdit = rating
+        if(!rating){
+          ratingEdit=0
+        }
         // Tạo một document mới cho review
         const newReview = new Review({
             username,
             comment,
-            rating,
+            rating:ratingEdit,
             tour: tourId,
             customer: customerId,
         });

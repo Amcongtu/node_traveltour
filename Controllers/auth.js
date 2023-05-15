@@ -61,7 +61,6 @@ export const signUp = async (req, res) => {
       return res.json({ message: "User registered successfully" });
     });
   } catch (error) {
-    console.error(error);
 
     session.abortTransaction();
     session.endSession();
@@ -148,7 +147,6 @@ export const login_client = async (req,res,next)=>{
           { expiresIn: '1h' }
       );
       const {password,...otherDetails} = user._doc;  
-        console.log("tui ne")
       return res.cookie("access_token_client", token, {
           httpOnly:true,
       })
