@@ -4,9 +4,9 @@ import { verifyClient } from "../utils/verifyToken.js";
 const router = express.Router()
 
 
-router.post("/",verifyClient,insertReview)
+router.post("/",insertReview)
 router.get('/',getAllReviews)
-router.delete('/:id',verifyClient,deleteReview)
-router.put('/:id',verifyClient,updateReview)
+router.delete('/:id',deleteReview)
+router.put('/:id',updateReview)
 export default router
 

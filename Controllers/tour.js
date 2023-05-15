@@ -207,11 +207,7 @@ export const updateTour = async (req, res, next) => {
       return res.status(404).json({ message: "Tour not found" });
     }
 
-    if(req.body.image_public_id){
-      await cloudinary.uploader.destroy(existingTour.image_public_id, {
-        invalidate: true,
-      });
-    }
+    
     // Update tour document in database
     const tour = await Tour.findByIdAndUpdate(tourID, {  rating:ratingEdited,
       price:priceEdited, ...updatedTour }, { new: true });
