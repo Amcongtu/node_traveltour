@@ -61,7 +61,7 @@ export const getAllToursStatusPublish = async(req,res,next)=>{
 export const getTour =async (req,res,next)=>{
   try {
     const tourID = req.params.id;
-    const tour = await Tour.findById(tourID);
+    const tour = await Tour.findById(tourID).populate('reviews');
     if (!tour) {
       return res.status(404).json({ message: 'Destination not found' });
     }
