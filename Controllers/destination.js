@@ -254,7 +254,8 @@ export const getAllDestinationsStatusPublic = async (req, res, next) => {
       .sort({ createdAt: "desc" })
       .populate({
         path: "tours",
-        match: { status: "published" }
+        match: { status: "published" },
+      options: { sort: { createdAt: "desc" } }
         });
 
     return res.status(200).json(destinations);
