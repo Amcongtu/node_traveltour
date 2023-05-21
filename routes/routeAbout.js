@@ -41,5 +41,20 @@ app.put('/',verifyAdmin, async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
+app.get('/', async (req, res) => {
+    try {
+      // Assuming you have a model called "About" defined for your database schema
+      
+      // Find the "About" document by ID
+      const about = await About.findOne({ id: "IDAbout" });
+      
+      if (!about) {
+        return res.status(404).json({ error: 'About not found' });
+      }
+      
+      return res.status(200).json(about);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 export default app
