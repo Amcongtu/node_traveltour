@@ -12,7 +12,9 @@ import bodyParser from "body-parser";
 import authRouter from './routes/routerAuth.js'
 import contactRouter from './routes/routerContact.js'
 import reviewRouter from './routes/routerReview.js'
+import aboutRouter from './routes/routeAbout.js'
 
+aboutRouter
 dotenv.config()
 
 //kết nối tới mongosedb
@@ -53,6 +55,7 @@ app.use("/api/employee",routerEmployee),
 app.use('/api/auth',authRouter)
 app.use('/api/review',reviewRouter)
 app.use('/api/contact',contactRouter)
+app.use('/api/about',aboutRouter)
 
 app.use((err, req, res, next)=>{
     const errorStatus = err.status || 500;
