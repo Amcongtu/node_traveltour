@@ -13,17 +13,15 @@ export const isLogin = async(req,res,next)=>{
         if(!token){
            
             return  res.status(401).json({
-                message:"You are not authenticated!"
+                message:"You are not authenticated! Please log in again."
             })
         }
         jwt.verify(token,JWT_process,(err,user)=>{
             
             if(err){
-                res.status(403).json({
-                    message:"Token is not valid!"
-                })
+               
                 return  res.status(403).json({
-                    message:"Token is not valid!"
+                    message:"Token is not valid! Please log in again. "
                 });
             }
             req.user = user;
