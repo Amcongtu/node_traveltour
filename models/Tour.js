@@ -38,15 +38,15 @@ const tourSchema = new Schema({
     required: true,
   },
   availableSlots: {
-    type: Number,
+    type: String,
     default: 0,
   },
   age: {
-    type: Number,
+    type: String,
     default: 3,
   },
   numberOfDay:{
-    type: Number,
+    type: String,
     required: true,
   },
   // reviews: [reviewSchema],
