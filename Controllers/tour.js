@@ -183,7 +183,7 @@ export const updateTour = async (req, res, next) => {
     // console.log(req.body)
     const tourID = req.params.id;
     // const {...updatedTour} = req.body;
-    const {destination,rating,price,...updatedTour} = req.body
+    const {rating,price,...updatedTour} = req.body
     var ratingEdited=rating
     var priceEdited =price
 
