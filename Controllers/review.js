@@ -166,7 +166,7 @@ export const getAllReviews = async (req, res, next) => {
 export const getAllReviewsRatingGt3 = async (req, res, next) => {
   try {
     // Truy vấn danh sách review với rating > 4
-    const reviews = await Review.find({ rating: { $gt: 3 } }).sort({ createdAt: "desc" }).populate("customer");
+    const reviews = await Review.find({ rating: { $gt: 3 } }).sort({ createdAt: "desc" }).limit(10).populate("customer");
     res.status(200).json(reviews);
   } catch (err) {
     next(err);
