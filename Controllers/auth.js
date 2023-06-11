@@ -86,7 +86,7 @@ export const login = async (req,res,next)=>{
       const token = jwt.sign(
           { id:user._id, position:user.position},
           process.env.JWT,
-          { expiresIn: '1h' }
+          { expiresIn: '6h' }
       );
       const {password,position,...otherDetails} = user._doc;  
       res.cookie("access_token", token, {

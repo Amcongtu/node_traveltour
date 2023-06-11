@@ -30,4 +30,4 @@ const destinationSchema = new mongoose.Schema({
   ],
 },{timestamps:true});
 
-export default mongoose.model('Destination', destinationSchema);
+export default mongoose.model.Destination || mongoose.model('Destination', destinationSchema);

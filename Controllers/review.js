@@ -163,6 +163,16 @@ export const getAllReviews = async (req, res, next) => {
   }
 };
 
+export const getAllReviewsRatingGt3 = async (req, res, next) => {
+  try {
+    // Truy vấn danh sách review với rating > 4
+    const reviews = await Review.find({ rating: { $gt: 3 } }).sort({ createdAt: "desc" });
+    res.status(200).json(reviews);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getAllReviewsOfTour = async (req, res, next) => {
   try {
     const tourID = req.params.id;

@@ -26,6 +26,7 @@ routerDestination.get('/:id/tours', getAllToursOfDestination);
 
 
 routerDestination.post('/',verifyAdmin, createDestination);
+// routerDestination.post('/', createDestination);
 routerDestination.put('/:id',verifyAdmin, updateDestination);
 routerDestination.delete('/:id',verifyAdmin, deleteDestination);
 

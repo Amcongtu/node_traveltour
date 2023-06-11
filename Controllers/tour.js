@@ -195,12 +195,7 @@ export const updateTour = async (req, res, next) => {
       priceEdited=0
     }
 
-    // const tour = new Tour({
-    //   ...detail,
-    //   rating:ratingEdited,
-    //   price:priceEdited,
-    //   destination:destination.name
-    // });
+    
 
     const existingTour = await Tour.findById(tourID);
     if (!existingTour) {
@@ -215,12 +210,19 @@ export const updateTour = async (req, res, next) => {
       return res.status(404).json({ message: "Tour not found" });
     }
     
-    // Update tour reference in destination document
-    // if (Destination.tours.indexOf(tourID) === -1) {
-    //   Destination.tours.push(tourID);
-    //   await Destination.save();
-    // }
-
+   
+    const destination = await Destination.findOne({ name: existingTour.destination });
+    console.log(destination)
+    if (!destination) {
+      return res.status(404).json({ message: "Destination not found" });
+    }
+    destination.tours.pull(tourID);
+    await destination.save();
+    const data = await Destination.findOneAndUpdate(
+      { name: req.body.destination },
+      { $push: { tours: tour._id } },
+      { new: true }
+    );
     return res.status(200).json({ message: "Tour updated successfully", tour });
   } catch (err) {
     next(err);
